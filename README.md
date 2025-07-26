@@ -1,14 +1,19 @@
 # Msc.-Advanced-Project-22997
 
-This repository contains the results of Counterspeech generations per instances of Hate Speech instances sourced from Reddit, taken from:
+This repository contains the results of an MSc project "Empowering Conversations: How Machine Learning Can Help Us Tackle Online Hate"
+
+## Counterspeech generation
+
+Instances of Hate Speech sourced from Reddit, taken from:
 "A Benchmark Dataset for Learning to Intervene in Online Hate Speech" available here: https://github.com/jing-qian/A-Benchmark-Dataset-for-Learning-to-Intervene-in-Online-Hate-Speech/blob/master/data/reddit.csv
 
 For genration Llama-3.2-1B model from Meta {https://huggingface.co/meta-llama/Llama-3.2-1B} was used.
+
 ---
 
 ### 📊 Evaluation of Counter-Speech Prompt Outcomes
 
-| **Required Outcome**               | **Prompt**                                                                                                                                                                                                 | **Valid CS (%)** | **Non-Hateful Hater Reentry (%)** | **Low Conversation Incivility (%)** | **METEOR**         | **BERT Score**       | **Llama-3.2-1B Generation Result**                                                                                                                                                                                                 | **Incivility Level Predictions** |
+| **Required Outcome**               | **Prompt**                                                                                                                                                                                                 | **Valid CS (%)** | **Non-Hateful Hater Reentry (%)** | **Low Conversation Incivility (%)** | **METEOR**         | **BERT Score**       | **Llama-3.2-1B Generation Result**                                                                                                                                                                                                 | **Incivility Level Predictions {0: 'barely', 1: 'somewhat', 2: 'highly'}** |
 |-----------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------|------------------------------------|--------------------------------------|--------------------|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------|
 | **Reference (crowd sourced)**     | -                                                                                                                                                                                                         | -                | 42.8%                             | 24.7%                               | 1                  | 1                    | Human-written baseline                                                                                                                                                                                                             | Mixed (low to moderate)       |
 | **None** *(baseline)*             | *"You are a helpful and understanding Redditor who aims to de-escalate conflict. Generate a constructive and polite counter-speech reply to the following Reddit comment.*<br>**{Hate Comment}**<br>Counter-speech:" | ~99.85%          | 54.9%                             | 35.7%                               | 0.025 (0.057)      | 0.814 (0.018)        | [Baseline](https://drive.google.com/file/d/1hOAMpvrUZTl45Z9jlLVa6dFcJ-PncNCk/view?usp=drive_link)                                                                                                                          | [Baseline](https://drive.google.com/file/d/1agOUCUihrpLPAAMf2PwUq_3mieEDTXQC/view?usp=sharing)                      |
@@ -17,5 +22,71 @@ For genration Llama-3.2-1B model from Meta {https://huggingface.co/meta-llama/Ll
 
 ---
 
-Let me know if you'd like to add previews, summaries of the linked content, or visualizations based on these results!
+The Incivility level predictions were done using this notebook:
+[Incivility level predictins with best classifier](https://colab.research.google.com/drive/1NAskjb6e_sltjk7ek7qJkzqqmpk3Lk70?usp=sharing)
+
+## Incivility level classifier 
+
+Incivility level classifier training was done using  the corpus of the ICWSM 2024 paper "Hate Cannot Drive out Hate: Forecasting Conversation Incivility following Replies to Hate Speech"
+(Authors: Xinchen Yu, Eduardo Blanco, and Lingzi Hong) available here [Conversation Incivility corpus](https://raw.githubusercontent.com/xinchenyu/incivility/refs/heads/main/data.csv).
+Incivility levels mapping: {0: 'barely', 1: 'somewhat', 2: 'highly'}
+
+This notebook was used to train be best classifier: [Incivility best classifier training notebook](https://colab.research.google.com/drive/1u_GcGzhAW090ut2kqSygVZ6r66hGVsoh?usp=sharing). Best Classifier is saved here: [Incivility best classifier model](https://drive.google.com/drive/folders/1gpoSUb7MZVCw7lxfogrBBL5jma-8XaEi?usp=sharing)
+
+### Incivility level classifier atrchitecture: 
+
+The best model was based on 🧠 CustomRobertaClassifier Architecture. This model defines a **custom classifier based on `roberta-base`**, extending it with additional fully connected layers for downstream multi-class classification.
+
+#### 📦 Class Definition
+
+```python
+class CustomRobertaClassifier(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.roberta = RobertaModel.from_pretrained("roberta-base")
+        self.dropout = nn.Dropout(0.1)
+        self.fc1 = nn.Linear(768, 768)
+        self.tanh = nn.Tanh()
+        self.fc2 = nn.Linear(768, 3)
+
+    def forward(self, input_ids=None, attention_mask=None, labels=None):
+        outputs = self.roberta(input_ids=input_ids, attention_mask=attention_mask)
+        x = self.dropout(outputs.last_hidden_state[:, 0, :])  # CLS token
+        x = self.tanh(self.fc1(x))
+        logits = self.fc2(x)
+
+        loss = None
+        if labels is not None:
+            loss_fn = nn.CrossEntropyLoss()
+            loss = loss_fn(logits, labels)
+
+        return SequenceClassifierOutput(loss=loss, logits=logits)
+```
+
+#### 🧬 Architecture Breakdown
+
+| Component            | Description                                                                 |
+| -------------------- | --------------------------------------------------------------------------- |
+| `RobertaModel`       | Pretrained `roberta-base` model from HuggingFace Transformers               |
+| `Dropout(p=0.1)`     | Dropout applied to the pooled `[CLS]` representation                        |
+| `Linear(768 → 768)`  | Fully connected hidden layer for transformation of CLS output               |
+| `Tanh()`             | Non-linear activation function after `fc1`                                  |
+| `Linear(768 → 3)`    | Final classification layer mapping to 3 output classes                      |
+| `CrossEntropyLoss()` | Loss function for training when `labels` are provided (multi-class setting) |
+
+#### 🔁 Forward Pass
+
+1. Input token IDs and attention masks are passed through `roberta-base`.
+2. The `[CLS]` token representation is extracted: `outputs.last_hidden_state[:, 0, :]`.
+3. Dropout regularization is applied.
+4. The result passes through a linear layer + tanh activation.
+5. A final linear layer maps to logits for 3-class classification.
+6. If labels are provided, a cross-entropy loss is computed.
+
+#### ✅ Output
+
+Returns a HuggingFace `SequenceClassifierOutput` containing:
+
+* `loss`: Cross-entropy loss (if labels provided)
+* `logits`: Raw class scores (before softmax)
 
