@@ -1,6 +1,6 @@
-# Msc.-Advanced-Project-22997
+# Empowering Conversations: How Machine Learning Can Help Us Tackle Online Hate
 
-This repository contains the results of an MSc project "Empowering Conversations: How Machine Learning Can Help Us Tackle Online Hate"
+This repository contains the results of an Msc.-Advanced-Project in The Open University of Israel (22997) titled "Empowering Conversations: How Machine Learning Can Help Us Tackle Online Hate".
 
 ## Counterspeech generation
 
