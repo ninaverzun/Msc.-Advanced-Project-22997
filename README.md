@@ -90,3 +90,25 @@ Returns a HuggingFace `SequenceClassifierOutput` containing:
 * `loss`: Cross-entropy loss (if labels provided)
 * `logits`: Raw class scores (before softmax)
 
+## Non-hateful hater reentry Classifier
+Incivility level classifier training was done using ReEco corpus introduced in the NAACL 2025 Findings paper:
+"Echoes of Discord: Forecasting Hater Reactions to Counterspeech." @article{song2025echoes, title={Echoes of Discord: Forecasting Hater Reactions to Counterspeech}, author={Song, Xiaoying and Perez, Sharon Lisseth and Yu, Xinchen and Blanco, Eduardo and Hong, Lingzi}, journal={arXiv preprint arXiv:2501.16235}, year={2025} }
+ReEco corpus comprises 5,723 (Hate Speech, Counterspeech) pairs collected from Reddit and includes key annotations to analyze haters' reactions.available here [[Echoes of Discord: Forecasting Hater Reactions to Counterspeech](https://raw.githubusercontent.com/xinchenyu/incivility/refs/heads/main/data.cs](https://github.com/oliveeeee25/counterspeech_effectiveness_hater_reentry/blob/main/hater_behavior_counterspeech.csv).
+
+ Column Descriptions:
+grandContent:
+Hate speech
+parentContent:
+Counterspeech
+sonContent:
+reply to counterspeech
+re_entry:
+1 → Reentry (Hater responds again after counterspeech)
+0 → No reentry (Hater does not respond)
+sonLabel & 3_category:
+1 → Hateful reentry
+0 → Non-hateful reentry
+2 → No reentry
+
+This notebook was used to train be best classifier: [Non-hateful hater reentry classification train](https://colab.research.google.com/drive/18S3MBEvlnW-sLma2BmE8h9oPZwco75GV?usp=sharing)
+
