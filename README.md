@@ -116,6 +116,7 @@ The ReEco corpus comprises **5,723 (Hate Speech, Counterspeech)** pairs collecte
 ---
 This notebook was used to train be best classifier: [Non-hateful hater reentry classification train](https://colab.research.google.com/drive/18S3MBEvlnW-sLma2BmE8h9oPZwco75GV?usp=sharing).
 Best hater-reentry behaviour classifier is saved here: [Non-hateful hater reentry best classifier model](https://drive.google.com/drive/folders/1tIHsCr-QWrsHzI4ae1KxRwhyaTxtVreK?usp=sharing).
+This noteboot was used for Benchmark data classification: [Hater-reentry behaviour classification](https://colab.research.google.com/drive/1KVRiBKZgE5MIJPFUwiz9l8N6GE0tbJ7b?usp=sharing).
 
 ### Citation
 
