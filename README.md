@@ -22,9 +22,6 @@ For genration Llama-3.2-1B model from Meta {https://huggingface.co/meta-llama/Ll
 
 ---
 
-The Incivility level predictions were done using this notebook:
-[Incivility level predictins with best classifier](https://colab.research.google.com/drive/1NAskjb6e_sltjk7ek7qJkzqqmpk3Lk70?usp=sharing)
-
 ## Incivility level classifier 
 
 Incivility level classifier training was done using  the corpus of the ICWSM 2024 paper "Hate Cannot Drive out Hate: Forecasting Conversation Incivility following Replies to Hate Speech"
@@ -32,6 +29,9 @@ Incivility level classifier training was done using  the corpus of the ICWSM 202
 Incivility levels mapping: {0: 'barely', 1: 'somewhat', 2: 'highly'}
 
 This notebook was used to train be best classifier: [Incivility best classifier training notebook](https://colab.research.google.com/drive/1u_GcGzhAW090ut2kqSygVZ6r66hGVsoh?usp=sharing). Best Classifier is saved here: [Incivility best classifier model](https://drive.google.com/drive/folders/1gpoSUb7MZVCw7lxfogrBBL5jma-8XaEi?usp=sharing)
+
+The Incivility level predictions were done using this notebook:
+[Incivility level predictins with best classifier](https://colab.research.google.com/drive/17afid54vG1uTHjJLcLjUX8rteKcF8mwH?usp=drive_link)
 
 ### Incivility level classifier atrchitecture: 
 
